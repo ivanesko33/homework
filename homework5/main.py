@@ -7,7 +7,7 @@ class CurrencyApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Курс обмена валюты к доллару")
-        self.root.geometry("360x180")
+        self.root.geometry("360x380")
 
         # Данные
         self.popular_currencies = [
@@ -19,23 +19,49 @@ class CurrencyApp:
         self._create_widgets()
 
     def _create_widgets(self):
-        # Метка
-        label = tk.Label(self.root, text="Выберите код валюты:")
-        label.pack(padx=10, pady=10)
+        # Метка для базовой валюты
+        label_base = tk.Label(self.root, text="Базовая валюта")
+        label_base.pack(padx=10, pady=10)
 
-        # Выпадающий список
-        self.combobox = ttk.Combobox(
+        # Выпадающий список для базовой волюты
+        self.combobox_base = ttk.Combobox(
             self.root,
             values=self.popular_currencies,
             state="readonly"
         )
-        self.combobox.current(7)  # По умолчанию RUB
-        self.combobox.pack(padx=10, pady=10)
+        self.combobox_base.current(0)  # По умолчанию EUR
+        self.combobox_base.pack(padx=10, pady=10)
+
+        # Метка для второй базовой валюты
+        label_base2 = tk.Label(self.root, text="Вторая базовая валюта")
+        label_base2.pack(padx=10, pady=10)
+
+        # Выпадающий список для второй базовой волюты
+        self.combobox_base2 = ttk.Combobox(
+            self.root,
+            values=self.popular_currencies,
+            state="readonly"
+        )
+        self.combobox_base2.current(1)  # По умолчанию JPY
+        self.combobox_base2.pack(padx=10, pady=10)
+
+        # Метка для целевой валюты
+        label_target = tk.Label(self.root, text="Целевая валюта")
+        label_target.pack(padx=10, pady=10)
+
+        # Выпадающий список для второй базовой волюты
+        self.combobox_target = ttk.Combobox(
+            self.root,
+            values=self.popular_currencies,
+            state="readonly"
+        )
+        self.combobox_target.current(7)  # По умолчанию RUB
+        self.combobox_target.pack(padx=10, pady=10)
 
         # Кнопка
         btn = tk.Button(
             self.root,
-            text="Получить курс обмена к доллару",
+            text="Получить курс обмена",
             command=self.on_exchange_click
         )
         btn.pack(padx=10, pady=10)
