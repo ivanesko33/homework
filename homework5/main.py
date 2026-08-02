@@ -10,6 +10,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox as mb
 import requests
 
+
 class CurrencyApp:
     def __init__(self, root):
         self.root = root
@@ -66,6 +67,7 @@ class CurrencyApp:
                 "<<ComboboxSelected>>",
                 on_combobox_base1_change)
             return self.combobox_base1
+
         def create_widget_base2():
             """ Второй базовой валюты """
             self.label_base2 = tk.Label(
@@ -96,6 +98,7 @@ class CurrencyApp:
             self.combobox_base2.bind("<<ComboboxSelected>>",
                                      on_combobox_base2_change)
             return self.combobox_base2
+
         def create_widget_target():
             """ Целевой валюты """
             self.label_target = tk.Label(
@@ -143,7 +146,8 @@ class CurrencyApp:
         code_base1 = self.base1.get()
         code_base2 = self.base2.get()
         code_target = self.target.get()
-        show_message = f"Курс к {code_target}:"
+        show_message = (f"Курс к {code_target}\n"
+                        f"({self.currency_names[code_target]})\n\n")
 
         if not code_base1 or not code_base2 or not code_target:
             mb.showwarning("Внимание", "Выберите код валюты")
@@ -151,14 +155,13 @@ class CurrencyApp:
 
         try:
             response = requests.get(self.api_url_base + code_target,
-                                     timeout=5)
-
+                                    timeout=5)
             response.raise_for_status()
             data = response.json()
             rates = data.get("rates", {})
             if code_base1 in rates:
                 exchange_rate_base1 = rates[code_base1]
-                show_message += f"{exchange_rate_base1:.1f}"
+                show_message += f"{code_base1}: {exchange_rate_base1:.1f}\n"
             else:
                 mb.showerror(
                     "Ошибка",
@@ -167,7 +170,7 @@ class CurrencyApp:
 
             if code_base2 in rates:
                 exchange_rate_base2 = rates[code_base2]
-                show_message += f"{exchange_rate_base2:.1f}
+                show_message += f"{code_base2}: {exchange_rate_base2:.1f}\n"
             else:
                 mb.showerror(
                     "Ошибка",
