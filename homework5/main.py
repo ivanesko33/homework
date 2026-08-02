@@ -40,16 +40,20 @@ class CurrencyApp:
         self.combobox_base1.current(0)  # По умолчанию EUR
         self.combobox_base1.pack(padx=10, pady=10)
 
-        def on_combobox_base_change(event):
+        def on_combobox_base1_change(event):
             # Получаем текущее значение из Combobox
             selected = self.combobox_base1.get()
             # Обновляем текст в Label
             label_base_name.config(text=self.currency_names[selected])
-        label_base_name = tk.Label(self.root)
+        label_base_name = tk.Label(
+            self.root,
+            text=self.currency_names[self.combobox_base1.get()]
+        )
         label_base_name.pack(padx=10, pady=10)
 
         self.combobox_base1.bind("<<ComboboxSelected>>",
-                               on_combobox_base_change)
+                               on_combobox_base1_change)
+        self.combobox_base1.get()
 
 
         # Метка для второй базовой валюты
