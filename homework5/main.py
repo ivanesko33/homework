@@ -6,14 +6,10 @@ import requests
 class CurrencyApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Курс обмена валюты к доллару")
+        self.root.title("Курс обмена валюты")
         self.root.geometry("360x380")
 
         # Данные
-        self.popular_currencies = [
-            "EUR", "JPY", "GBP", "AUD", "CAD",
-            "CHF", "CNY", "RUB", "KZT", "UZS", "USD"
-        ]
         self.currency_names = {
             "EUR": "Евро",
             "JPY": "Японская иена",
@@ -27,6 +23,7 @@ class CurrencyApp:
             "UZS": "Узбекский сум",
             "USD": "Американский доллар",
         }
+        self.popular_currencies = list(self.currency_names.keys())
         self.api_url = "https://open.er-api.com/v6/latest/USD"
 
         self._create_widgets()
