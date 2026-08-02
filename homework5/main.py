@@ -12,7 +12,7 @@ class CurrencyApp:
         # Данные
         self.popular_currencies = [
             "EUR", "JPY", "GBP", "AUD", "CAD",
-            "CHF", "CNY", "RUB", "KZT", "UZS"
+            "CHF", "CNY", "RUB", "KZT", "UZS", "USD"
         ]
         self.api_url = "https://open.er-api.com/v6/latest/USD"
 
