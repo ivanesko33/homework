@@ -55,11 +55,16 @@ class CurrencyApp:
             if code in rates:
                 exchange_rate = rates[code]
                 mb.showinfo(
-                    "Курс обмена",
-                    f"Курс к доллару: {exchange_rate:.1f} {code} за 1 доллар"
+                    f"Курс обмена",
+                    (f"Курс к доллару:"
+                        f"{exchange_rate:.1f} {code} за 1 "
+                        f"доллар")
                 )
             else:
-                mb.showerror("Ошибка", f"Валюта {code} не найдена")
+                mb.showerror(
+                    "Ошибка",
+                    f"Валюта {code} не найдена"
+                )
         except requests.exceptions.RequestException as e:
             mb.showerror("Ошибка сети", f"Ошибка запроса: {e}")
         except Exception as e:
