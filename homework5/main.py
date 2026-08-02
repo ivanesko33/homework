@@ -14,23 +14,46 @@ class CurrencyApp:
             "EUR", "JPY", "GBP", "AUD", "CAD",
             "CHF", "CNY", "RUB", "KZT", "UZS", "USD"
         ]
+        self.currency_names = {
+            "EUR": "Евро",
+            "JPY": "Японская иена",
+            "GBP": "Фунт стерлингов",
+            "AUD": "Австралийский доллар",
+            "CAD": "Канадский доллар",
+            "CHF": "Швейцарский франк",
+            "CNY": "Китайский юань",
+            "RUB": "Российский рубль",
+            "KZT": "Казахстанский тенге",
+            "UZS": "Узбекский сум",
+            "USD": "Американский доллар",
+        }
         self.api_url = "https://open.er-api.com/v6/latest/USD"
 
         self._create_widgets()
 
     def _create_widgets(self):
         # Метка для базовой валюты
-        label_base = tk.Label(self.root, text="Базовая валюта")
-        label_base.pack(padx=10, pady=10)
-
-        # Выпадающий список для базовой волюты
-        self.combobox_base = ttk.Combobox(
+        label_base1 = tk.Label(self.root, text="Базовая валюта")
+        label_base1.pack(padx=10, pady=10)
+        self.combobox_base1 = ttk.Combobox(
             self.root,
             values=self.popular_currencies,
             state="readonly"
         )
-        self.combobox_base.current(0)  # По умолчанию EUR
-        self.combobox_base.pack(padx=10, pady=10)
+        self.combobox_base1.current(0)  # По умолчанию EUR
+        self.combobox_base1.pack(padx=10, pady=10)
+
+        def on_combobox_base_change(event):
+            # Получаем текущее значение из Combobox
+            selected = self.combobox_base1.get()
+            # Обновляем текст в Label
+            label_base_name.config(text=self.currency_names[selected])
+        label_base_name = tk.Label(self.root)
+        label_base_name.pack(padx=10, pady=10)
+
+        self.combobox_base1.bind("<<ComboboxSelected>>",
+                               on_combobox_base_change)
+
 
         # Метка для второй базовой валюты
         label_base2 = tk.Label(self.root, text="Вторая базовая валюта")
