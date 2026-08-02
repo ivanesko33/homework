@@ -43,6 +43,7 @@ class CurrencyApp:
             )
             self.combobox_base1.current(0)  # По умолчанию EUR
             self.combobox_base1.pack(padx=10, pady=10)
+
             def on_combobox_base1_change(event):
                 selected = self.combobox_base1.get()
                 self.label_base_name.config(
@@ -57,8 +58,9 @@ class CurrencyApp:
             self.combobox_base1.bind(
                 "<<ComboboxSelected>>",
                 on_combobox_base1_change)
+            return self.combobox_base1
 
-        create_widget_base1()
+        self.base1 = create_widget_base1()
 
         def create_widget_base2():
             """ Второй базовой валюты """
@@ -89,8 +91,9 @@ class CurrencyApp:
 
             self.combobox_base2.bind("<<ComboboxSelected>>",
                                      on_combobox_base2_change)
+            return self.combobox_base2
 
-        create_widget_base2()
+        self.base2 = create_widget_base2()
 
         def create_widget_target():
             """ Целевой валюты """
@@ -112,6 +115,7 @@ class CurrencyApp:
                 selected = self.combobox_target.get()
                 self.label_target_name.config(
                     text=self.currency_names[selected])
+
             self.label_target_name = tk.Label(
                 self.root,
                 text=self.currency_names[self.combobox_target.get()]
@@ -119,9 +123,10 @@ class CurrencyApp:
             self.label_target_name.pack(padx=10, pady=10)
 
             self.combobox_target.bind("<<ComboboxSelected>>",
-                                     on_combobox_target_change)
+                                      on_combobox_target_change)
+            return self.combobox_target
 
-        create_widget_target()
+        self.target = create_widget_target()
 
         # Кнопка
         btn = tk.Button(
@@ -132,8 +137,11 @@ class CurrencyApp:
         btn.pack(padx=10, pady=10)
 
     def on_exchange_click(self):
-        code = self.combobox.get()
-        if not code:
+        code_base1 = self.base1.get()
+        code_base2 = self.base2.get()
+        code_target = self.target.get()
+
+        if not code_base1 or not code_base2 or not code_target:
             mb.showwarning("Внимание", "Выберите код валюты")
             return
 
@@ -143,18 +151,18 @@ class CurrencyApp:
             data = response.json()
 
             rates = data.get("rates", {})
-            if code in rates:
-                exchange_rate = rates[code]
+            if code_base1 in rates:
+                exchange_rate = rates[code_base1]
                 mb.showinfo(
                     f"Курс обмена",
                     (f"Курс к доллару:"
-                     f"{exchange_rate:.1f} {code} за 1 "
+                     f"{exchange_rate:.1f} {code_base1} за 1 "
                      f"доллар")
                 )
             else:
                 mb.showerror(
                     "Ошибка",
-                    f"Валюта {code} не найдена"
+                    f"Валюта {code_base1} не найдена"
                 )
         except requests.exceptions.RequestException as e:
             mb.showerror("Ошибка сети", f"Ошибка запроса: {e}")
