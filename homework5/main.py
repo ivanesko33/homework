@@ -1,13 +1,20 @@
+"""
+Добавьте в проект, разработанный на уроке, вторую базовую валюту,
+чтобы он выводил сразу два курса обмена одновременно.
+Получайте данные в формате JSON. Добавьте еще одно поле для выбора
+второй базовой валюты.
+Измените функцию exchange так, чтобы она запрашивала и отображала
+курсы обмена для обеих базовых валют относительно выбранной целевой валюты.
+"""
 import tkinter as tk
 from tkinter import ttk, messagebox as mb
 import requests
-
 
 class CurrencyApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Курс обмена валюты")
-        self.root.geometry("360x450")
+        self.root.geometry("360x370")
 
         # Данные
         self.currency_names = {
@@ -42,7 +49,7 @@ class CurrencyApp:
                 state="readonly"
             )
             self.combobox_base1.current(0)  # По умолчанию EUR
-            self.combobox_base1.pack(padx=10, pady=10)
+            self.combobox_base1.pack(padx=0, pady=0)
 
             def on_combobox_base1_change(event):
                 selected = self.combobox_base1.get()
@@ -53,15 +60,12 @@ class CurrencyApp:
                 self.root,
                 text=self.currency_names[self.combobox_base1.get()]
             )
-            self.label_base_name.pack(padx=10, pady=10)
+            self.label_base_name.pack(padx=0, pady=0)
 
             self.combobox_base1.bind(
                 "<<ComboboxSelected>>",
                 on_combobox_base1_change)
             return self.combobox_base1
-
-        self.base1 = create_widget_base1()
-
         def create_widget_base2():
             """ Второй базовой валюты """
             self.label_base2 = tk.Label(
@@ -76,7 +80,7 @@ class CurrencyApp:
                 state="readonly"
             )
             self.combobox_base2.current(1)  # По умолчанию JPY
-            self.combobox_base2.pack(padx=10, pady=10)
+            self.combobox_base2.pack(padx=0, pady=0)
 
             def on_combobox_base2_change(event):
                 selected = self.combobox_base2.get()
@@ -87,14 +91,11 @@ class CurrencyApp:
                 self.root,
                 text=self.currency_names[self.combobox_base2.get()]
             )
-            self.label_base2_name.pack(padx=10, pady=10)
+            self.label_base2_name.pack(padx=0, pady=0)
 
             self.combobox_base2.bind("<<ComboboxSelected>>",
                                      on_combobox_base2_change)
             return self.combobox_base2
-
-        self.base2 = create_widget_base2()
-
         def create_widget_target():
             """ Целевой валюты """
             self.label_target = tk.Label(
@@ -109,7 +110,7 @@ class CurrencyApp:
                 state="readonly"
             )
             self.combobox_target.current(7)  # По умолчанию RUB
-            self.combobox_target.pack(padx=10, pady=10)
+            self.combobox_target.pack(padx=0, pady=0)
 
             def on_combobox_target_change(event):
                 selected = self.combobox_target.get()
@@ -120,12 +121,14 @@ class CurrencyApp:
                 self.root,
                 text=self.currency_names[self.combobox_target.get()]
             )
-            self.label_target_name.pack(padx=10, pady=10)
+            self.label_target_name.pack(padx=0, pady=0)
 
             self.combobox_target.bind("<<ComboboxSelected>>",
                                       on_combobox_target_change)
             return self.combobox_target
 
+        self.base1 = create_widget_base1()
+        self.base2 = create_widget_base2()
         self.target = create_widget_target()
 
         # Кнопка
@@ -134,7 +137,7 @@ class CurrencyApp:
             text="Получить курс обмена",
             command=self.on_exchange_click
         )
-        btn.pack(padx=10, pady=10)
+        btn.pack(padx=30, pady=30)
 
     def on_exchange_click(self):
         code_base1 = self.base1.get()
