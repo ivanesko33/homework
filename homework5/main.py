@@ -31,7 +31,7 @@ class CurrencyApp:
             "USD": "Американский доллар",
         }
         self.popular_currencies = list(self.currency_names.keys())
-        self.api_url = "https://open.er-api.com/v6/latest/USD"
+        self.api_url_base = "https://open.er-api.com/v6/latest/"
 
         self._create_widgets()
 
@@ -143,34 +143,45 @@ class CurrencyApp:
         code_base1 = self.base1.get()
         code_base2 = self.base2.get()
         code_target = self.target.get()
+        show_message = f"Курс к {code_target}:"
 
         if not code_base1 or not code_base2 or not code_target:
             mb.showwarning("Внимание", "Выберите код валюты")
             return
 
         try:
-            response = requests.get(self.api_url, timeout=5)
+            response = requests.get(self.api_url_base + code_target,
+                                     timeout=5)
+
             response.raise_for_status()
             data = response.json()
-
             rates = data.get("rates", {})
             if code_base1 in rates:
-                exchange_rate = rates[code_base1]
-                mb.showinfo(
-                    f"Курс обмена",
-                    (f"Курс к доллару:"
-                     f"{exchange_rate:.1f} {code_base1} за 1 "
-                     f"доллар")
-                )
+                exchange_rate_base1 = rates[code_base1]
+                show_message += f"{exchange_rate_base1:.1f}"
             else:
                 mb.showerror(
                     "Ошибка",
                     f"Валюта {code_base1} не найдена"
                 )
+
+            if code_base2 in rates:
+                exchange_rate_base2 = rates[code_base2]
+                show_message += f"{exchange_rate_base2:.1f}
+            else:
+                mb.showerror(
+                    "Ошибка",
+                    f"Валюта {code_base2} не найдена"
+                )
         except requests.exceptions.RequestException as e:
             mb.showerror("Ошибка сети", f"Ошибка запроса: {e}")
         except Exception as e:
             mb.showerror("Ошибка", f"Произошла ошибка: {e}")
+        finally:
+            mb.showinfo(
+                f"Курс обмена",
+                f"{show_message}"
+            )
 
 
 if __name__ == "__main__":
