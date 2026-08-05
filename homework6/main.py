@@ -25,6 +25,7 @@ URL = (f"https://api.coingecko.com/api/v3/simple/price?ids"
 
 
 def parse_data_from_api(data_: dict | None) -> list | None:
+    """ парсит полученный json от api в словать для отображения """
     result = []  # локальный список
     if data_ is not None:
         for coin_id, display_name in CRYPTO.items():
@@ -89,8 +90,12 @@ def create_tk_interface():
             return f'{coin["display_name"]}: нет данных'
         return f'{coin["display_name"]}: {price}'
 
-    def show_coin_prices(result_: list) -> None:
+    def show_coin_prices(result_: list | None) -> None:
         """  вывести информацию о стоймости криптовалют """
+        # если нет новых даннх то оставить предыдущие
+        if result_ is None:
+            return None
+
         # Очищаем старые метки
         for label in price_labels:
             label.destroy()
@@ -115,6 +120,7 @@ def create_tk_interface():
 
     def show_refresh_button(window_, fn_refresh_, icon_= PhotoImage |
                                                         None ) -> tk.Button:
+        """ отображает refresh кнопку для запроса новых данных """
         if icon_ is not None:
             btn = tk.Button(  # иконка загрузилась
                 window_,
@@ -141,6 +147,7 @@ def create_tk_interface():
     window = tk.Tk()  # объект Tk
     window.title("курсы популярных криптовалют")
     window.geometry("400x450")
+    window.resizable(width=False, height=False) # зафискировать размер
 
     # загружаем иконку для отображения в окне и на кнопке
     icon = load_icon(ICON_FILE)
