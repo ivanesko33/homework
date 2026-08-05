@@ -1,23 +1,26 @@
 import requests
+import tkinter as tk
 
 # Пять наиболее популярных криптовалют
-CRYPTO_MAP = {
+CRYPTO = {
     "bitcoin": "Bitcoin (BTC)",
     "ethereum": "Ethereum (ETH)",
     "solana": "Solana (SOL)",
     "binancecoin": "Binance Coin (BNB)",
     "ripple": "Ripple (XRP)"
 }
-# строка для get запроса
-ids_param = ",".join(CRYPTO_MAP.keys())
+# utl строка для get запроса
+param = ",".join(CRYPTO.keys())
 url = (f"https://api.coingecko.com/api/v3/simple/price?ids"
-       f"={ids_param}&vs_currencies=usd")
+       f"={param}&vs_currencies=usd")
+# список курсы популярных криптовалют к доллару США
+result = list()
 
 
 def parsing_data(data):
     """ GET запрос к coingecko для криптовалют в CRYPTO_MAP """
-    result = []
-    for coin_id, display_name in CRYPTO_MAP.items():
+    global result
+    for coin_id, display_name in CRYPTO.items():
         if coin_id in data:
             price_usd = data[coin_id].get("usd", 0)
             formatted_price = f"{price_usd:,.2f}"
@@ -36,13 +39,29 @@ def parsing_data(data):
             })
     return result
 
+def show_coint_info(coin: dict) -> str:
+    """ словарь описания монеты в строку """
+    return f'{coin["display_name"]}: {coin["price_usd"]}'
 
 try:
     # Установка таймаута на случай проблем со связью
     response = requests.get(url, timeout=10)
     if response.status_code == 200:
-        prices = response.json()
-        print(parsing_data(prices))
+        result  = parsing_data(response.json())
+        # Создаём главное окно
+        root = tk.Tk()
+        root.title("курсы популярных криптовалют")
+        root.geometry("400x450")
+        for coin in result:
+            label = tk.Label(root, text=show_coint_info(coin),
+                             wraplength=350,
+                            justify="left")
+            label.pack(pady=20)
+        # Запуск цикла
+        root.mainloop()
+
+        for item in result:
+            print(item)
     else:
         print(f"Ошибка API: код {response.status_code}")
 except requests.exceptions.RequestException as e:
