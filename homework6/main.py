@@ -1,5 +1,6 @@
 import requests
 
+# Пять наиболее популярных криптовалют
 CRYPTO_MAP = {
     "bitcoin": "Bitcoin (BTC)",
     "ethereum": "Ethereum (ETH)",
@@ -7,32 +8,42 @@ CRYPTO_MAP = {
     "binancecoin": "Binance Coin (BNB)",
     "ripple": "Ripple (XRP)"
 }
-
+# строка для get запроса
 ids_param = ",".join(CRYPTO_MAP.keys())
-url = f"https://api.coingecko.com/api/v3/simple/price?ids={ids_param}&vs_currencies=usd"
+url = (f"https://api.coingecko.com/api/v3/simple/price?ids"
+       f"={ids_param}&vs_currencies=usd")
 
 
 def parsing_data(data):
-    # pprint(data, indent=4, width=30)
+    """ GET запрос к coingecko для криптовалют в CRYPTO_MAP """
+    result = []
     for coin_id, display_name in CRYPTO_MAP.items():
         if coin_id in data:
             price_usd = data[coin_id].get("usd", 0)
-            # Форматируем цену: отделяем тысячи запятыми и оставляем 2 знака после запятой
-            print(f"{display_name:<20} : $ {price_usd:,.2f}")
+            formatted_price = f"{price_usd:,.2f}"
+            result.append({
+                "coin_id": coin_id,
+                "display_name": display_name,
+                "price_usd": formatted_price,
+                "status": "available"
+            })
         else:
-            print(f"{display_name:<20} : Данные отсутствуют")
+            result.append({
+                "coin_id": coin_id,
+                "display_name": display_name,
+                "price_usd": None,
+                "status": "missing"
+            })
+    return result
 
 
 try:
     # Установка таймаута на случай проблем со связью
     response = requests.get(url, timeout=10)
-
     if response.status_code == 200:
-        data = response.json()
-        # print(data)
-        parsing_data(data)
+        prices = response.json()
+        print(parsing_data(prices))
     else:
         print(f"Ошибка API: код {response.status_code}")
-
 except requests.exceptions.RequestException as e:
     print(f"Ошибка сети: {str(e)}")
