@@ -10,24 +10,24 @@ import sys
 
 # краткое описание программы для отображения в UI
 DESCRIPTION = (
-    "Запрос к API CoinGecko для отображения информации о "
-    "стоимости пяти наиболее популярных криптовалют "
-    "к доллару США"
+    'Запрос к API CoinGecko для отображения информации о '
+    'стоимости пяти наиболее популярных криптовалют '
+    'к доллару США'
 )
 # название файла с иконкой приложения и для кнопки
 ICON_FILE = 'cript_coin.gif'
 # Пять наиболее популярных криптовалют
 CRYPTO = {
-    "bitcoin": "Bitcoin (BTC)",
-    "ethereum": "Ethereum (ETH)",
-    "solana": "Solana (SOL)",
-    "binancecoin": "Binance Coin (BNB)",
-    "ripple": "Ripple (XRP)"
+    'bitcoin': 'Bitcoin (BTC)',
+    'ethereum': 'Ethereum (ETH)',
+    'solana': 'Solana (SOL)',
+    'binancecoin': 'Binance Coin (BNB)',
+    'ripple': 'Ripple (XRP)'
 }
 # url строка для get запроса
 PARAM = ','.join(CRYPTO.keys())
-URL = (f"https://api.coingecko.com/api/v3/simple/price?ids"
-       f"={PARAM}&vs_currencies=usd")
+URL = (f'https://api.coingecko.com/api/v3/simple/price?ids'
+       f'={PARAM}&vs_currencies=usd')
 
 
 def parse_data_from_api(data_: dict | None) -> list | None:
@@ -36,20 +36,20 @@ def parse_data_from_api(data_: dict | None) -> list | None:
     if data_ is not None:
         for coin_id, display_name in CRYPTO.items():
             if coin_id in data_:
-                price_usd = data_[coin_id].get("usd", 0)
-                formatted_price = f"{price_usd:,.2f}"
+                price_usd = data_[coin_id].get('usd', 0)
+                formatted_price = f'{price_usd:,.2f}'
                 result.append({
-                    "coin_id": coin_id,
-                    "display_name": display_name,
-                    "price_usd": formatted_price,
-                    "status": "ok"
+                    'coin_id': coin_id,
+                    'display_name': display_name,
+                    'price_usd': formatted_price,
+                    'status': 'ok'
                 })
             else:
                 result.append({
-                    "coin_id": coin_id,
-                    "display_name": display_name,
-                    "price_usd": None,
-                    "status": "missing"
+                    'coin_id': coin_id,
+                    'display_name': display_name,
+                    'price_usd': None,
+                    'status': 'missing'
                 })
         return result
     else:
@@ -63,10 +63,10 @@ def get_data_by_api(url_: str) -> dict | None:
         if response.status_code == 200:
             return response.json()
         else:
-            print(f"ОШИБКА API: код {response.status_code}")
+            print(f'ОШИБКА API: код {response.status_code}')
             return None
     except requests.exceptions.RequestException as e:
-        print(f"ОШИБКА сети: {str(e)}")
+        print(f'ОШИБКА сети: {str(e)}')
         return None
 
 
@@ -82,7 +82,7 @@ def create_tk_interface():
             return None
 
     def show_window_icon(window_: tk.Tk, icon_: PhotoImage | None) -> None:
-        """установить иконку окна """
+        """ установить иконку окна """
         if icon_ is not None:
             window_.iconphoto(False, icon_)
 
@@ -91,16 +91,16 @@ def create_tk_interface():
 
     def coin_info_for_lable(coin: dict) -> str:
         """ словарь описания монеты в строку """
-        price = coin["price_usd"]
+        price = coin['price_usd']
         if price is None:
-            return f'{coin["display_name"]}: нет данных'
-        return f'{coin["display_name"]}: {price}'
+            return f'{coin['display_name']}: нет данных'
+        return f'{coin['display_name']}: {price}'
 
     def show_coin_prices(result_: list | None) -> None:
         """  вывести информацию о стоймости криптовалют """
         # если нет новых данных, то оставить предыдущие
         if result_ is None:
-            return None
+            return
 
         # Очищаем старые метки
         for label in price_labels:
@@ -112,9 +112,9 @@ def create_tk_interface():
             window,
             text=DESCRIPTION,
             wraplength=350,
-            justify="left",
-            font=("Arial", 10),
-            fg = "#333333"  # тёмно‑серый цвет текста
+            justify='left',
+            font=('Arial', 10),
+            fg='#333333'  # тёмно‑серый цвет текста
         )
         label.pack(pady=10)
         price_labels.append(label)
@@ -124,8 +124,8 @@ def create_tk_interface():
                 window,
                 text=coin_info_for_lable(coin),
                 wraplength=350,
-                justify="left",
-                font=("Arial", 14)
+                justify='left',
+                font=('Arial', 14)
             )
             label.pack(pady=10)
             price_labels.append(label)
@@ -144,7 +144,7 @@ def create_tk_interface():
         if icon_ is not None:
             btn = tk.Button(  # иконка загрузилась
                 window_,
-                text="Обновить",
+                text='Обновить',
                 image=icon_,
                 compound=tk.LEFT,
                 command=fn_refresh_,
@@ -155,7 +155,7 @@ def create_tk_interface():
         else:
             btn = tk.Button(  # без иконки
                 window_,
-                text="Обновить",
+                text='Обновить',
                 command=fn_refresh_,
                 padx=10,
                 pady=5
@@ -165,8 +165,8 @@ def create_tk_interface():
 
     # главное окно
     window = tk.Tk()  # объект Tk
-    window.title("курсы популярных криптовалют")
-    window.geometry("400x400")
+    window.title('курсы популярных криптовалют')
+    window.geometry('400x400')
     window.resizable(width=False, height=False)  # зафискировать размер
 
     # загружаем иконку для отображения в окне и на кнопке
@@ -185,12 +185,13 @@ def create_tk_interface():
 
     window.mainloop()
 
+
 # main
-if __name__ == "__main__":
-    if sys.version_info >= (3, 11): # для версии 3.11 или выше
+if __name__ == '__main__':
+    if sys.version_info >= (3, 11):  # для версии 3.11 или выше
         create_tk_interface()
     else:
-        print("Программа разработана для версия Python 3.11 или выше")
-        print((f"Текущая версия {sys.version_info.major}"
-               f".{sys.version_info.minor} — ниже 3.11"))
+        print('Программа разработана для версия Python 3.11 или выше')
+        print((f'Текущая версия {sys.version_info.major}'
+               f'.{sys.version_info.minor} — ниже 3.11'))
         sys.exit(1)
