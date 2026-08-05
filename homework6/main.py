@@ -1,13 +1,11 @@
 """
 Приложение с графическим интерфейсом на языке Python, которое отображать
 текущие курсы популярных криптовалют к доллару США,
-используя данные открытого API CoinGecko. https://www.coingecko.com/en/api .
+используя данные открытого API CoinGecko. https://www.coingecko.com/en/api
 """
 import requests
 import tkinter as tk
 from tkinter import PhotoImage
-from tkinter import Button
-from tkinter import Label
 import sys
 
 # название файла с иконкой приложения и для кнопки
@@ -25,7 +23,8 @@ PARAM = ','.join(CRYPTO.keys())
 URL = (f"https://api.coingecko.com/api/v3/simple/price?ids"
        f"={PARAM}&vs_currencies=usd")
 
-def parse_data_from_api(data_: dict | None) -> list | None :
+
+def parse_data_from_api(data_: dict | None) -> list | None:
     result = []  # локальный список
     if data_ is not None:
         for coin_id, display_name in CRYPTO.items():
@@ -66,6 +65,7 @@ def get_data_by_api(url_: str) -> dict | None:
 
 def create_tk_interface():
     """ работа с UI """
+
     def load_icon(icon_file_name: str) -> PhotoImage | None:
         """ загрузка иконки, если нет то без иконки, вернуть None """
         try:
@@ -74,7 +74,7 @@ def create_tk_interface():
             print(f'ОШИБКА загрузки иконки: {e}')
             return None
 
-    def show_window_icon(window_ : tk.Tk, icon_: PhotoImage | None) -> None:
+    def show_window_icon(window_: tk.Tk, icon_: PhotoImage | None) -> None:
         """установить иконку окна """
         if icon_ is not None:
             window_.iconphoto(False, icon_)
@@ -113,10 +113,10 @@ def create_tk_interface():
         prices = parse_data_from_api(data)
         show_coin_prices(prices)
 
-    def show_refresh_button(window_, fn_refresh_, icon_ = PhotoImage |
-                                                          None) -> Button:
+    def show_refresh_button(window_, fn_refresh_, icon_= PhotoImage |
+                                                        None ) -> tk.Button:
         if icon_ is not None:
-            btn = tk.Button( # иконка загрузилась
+            btn = tk.Button(  # иконка загрузилась
                 window_,
                 text="Обновить",
                 image=icon_,
@@ -127,7 +127,7 @@ def create_tk_interface():
             )
             btn.image = icon_
         else:
-            btn = tk.Button( # без иконки
+            btn = tk.Button(  # без иконки
                 window_,
                 text="Обновить",
                 command=fn_refresh_,
@@ -138,7 +138,7 @@ def create_tk_interface():
         return btn
 
     # главное окно
-    window = tk.Tk() # объект Tk
+    window = tk.Tk()  # объект Tk
     window.title("курсы популярных криптовалют")
     window.geometry("400x450")
 
@@ -166,5 +166,3 @@ if __name__ == "__main__":
         print((f"Текущая версия {sys.version_info.major}"
                f".{sys.version_info.minor} — ниже 3.11"))
         sys.exit(1)
-
-
