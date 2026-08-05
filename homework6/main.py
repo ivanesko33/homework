@@ -8,6 +8,12 @@ import tkinter as tk
 from tkinter import PhotoImage
 import sys
 
+# краткое описание программы для отображения в UI
+DESCRIPTION = (
+    "Запрос к API CoinGecko для отображения информации о "
+    "стоимости пяти наиболее популярных криптовалют "
+    "к доллару США"
+)
 # название файла с иконкой приложения и для кнопки
 ICON_FILE = 'cript_coin.gif'
 # Пять наиболее популярных криптовалют
@@ -92,7 +98,7 @@ def create_tk_interface():
 
     def show_coin_prices(result_: list | None) -> None:
         """  вывести информацию о стоймости криптовалют """
-        # если нет новых даннх то оставить предыдущие
+        # если нет новых данных, то оставить предыдущие
         if result_ is None:
             return None
 
@@ -100,6 +106,18 @@ def create_tk_interface():
         for label in price_labels:
             label.destroy()
         price_labels.clear()
+
+        # краткое описание программы
+        label = tk.Label(
+            window,
+            text=DESCRIPTION,
+            wraplength=350,
+            justify="left",
+            font=("Arial", 10),
+            fg = "#333333"  # тёмно‑серый цвет текста
+        )
+        label.pack(pady=10)
+        price_labels.append(label)
 
         for coin in result_:
             label = tk.Label(
@@ -118,8 +136,10 @@ def create_tk_interface():
         prices = parse_data_from_api(data)
         show_coin_prices(prices)
 
-    def show_refresh_button(window_, fn_refresh_, icon_= PhotoImage |
-                                                        None ) -> tk.Button:
+    def show_refresh_button(
+            window_,
+            fn_refresh_,
+            icon_=PhotoImage | None) -> tk.Button:
         """ отображает refresh кнопку для запроса новых данных """
         if icon_ is not None:
             btn = tk.Button(  # иконка загрузилась
@@ -146,8 +166,8 @@ def create_tk_interface():
     # главное окно
     window = tk.Tk()  # объект Tk
     window.title("курсы популярных криптовалют")
-    window.geometry("400x450")
-    window.resizable(width=False, height=False) # зафискировать размер
+    window.geometry("400x400")
+    window.resizable(width=False, height=False)  # зафискировать размер
 
     # загружаем иконку для отображения в окне и на кнопке
     icon = load_icon(ICON_FILE)
@@ -165,8 +185,9 @@ def create_tk_interface():
 
     window.mainloop()
 
+# main
 if __name__ == "__main__":
-    if sys.version_info >= (3, 11):
+    if sys.version_info >= (3, 11): # для версии 3.11 или выше
         create_tk_interface()
     else:
         print("Программа разработана для версия Python 3.11 или выше")
