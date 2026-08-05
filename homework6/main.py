@@ -52,6 +52,11 @@ try:
         root = tk.Tk()
         root.title("курсы популярных криптовалют")
         root.geometry("400x450")
+        import tkinter as tk
+        # Загрузка и установка изображение для иконки окна
+        icon = tk.PhotoImage(file="cript_coin.png")
+        root.iconphoto(False, icon)
+
         for coin in result:
             label = tk.Label(root, text=show_coint_info(coin),
                              wraplength=350,
