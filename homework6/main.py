@@ -9,22 +9,30 @@ CRYPTO = {
     "binancecoin": "Binance Coin (BNB)",
     "ripple": "Ripple (XRP)"
 }
+
 # название файла с иконкой приложения и для кнопки
 ICON_FILE = 'cript_coin.png'
+
 # url строка для get запроса
 PARAM = ','.join(CRYPTO.keys())
 URL = (f"https://api.coingecko.com/api/v3/simple/price?ids"
        f"={PARAM}&vs_currencies=usd")
+
 # список курсы популярных криптовалют к доллару США
 result = list()
-# иконка для криптовалют, для основного окна и для кнопки
+
 # главное окно
 root = tk.Tk()
 root.title("курсы популярных криптовалют")
 root.geometry("400x450")
-# установка иконки окна
-icon = tk.PhotoImage(file=ICON_FILE)
-root.iconphoto(False, icon)
+
+# установка иконки окна, если нет иконки то без иконки
+try:
+    icon = tk.PhotoImage(file=ICON_FILE)
+    root.iconphoto(False, icon)
+except Exception as e:
+    print(e)
+    icon = None
 
 def parsing_data(data):
     """ GET запрос к coingecko для криптовалют в CRYPTO_MAP """
@@ -57,12 +65,10 @@ def on_click():
 
 
 try:
-    # Установка таймаута на случай проблем со связью
-    response = requests.get(URL, timeout=10)
+    # Установка таймаута в 5 секунд на случай проблем со связью
+    response = requests.get(URL, timeout=5)
     if response.status_code == 200:
         result  = parsing_data(response.json())
-
-
         for coin in result:
             label = tk.Label(
                 root,
@@ -72,16 +78,25 @@ try:
                 font=("Arial", 14)
             )
             label.pack(pady=20)
-        # кнопка для обновления
-        btn = tk.Button(
-            root,
-            text="Обновить",
-            image=icon,
-            compound=tk.LEFT,
-            command=on_click,
-            padx=10,
-            pady=5
-        )
+        # кнопка для обновления, если нет иконки то просто текст
+        if icon is not None:
+            btn = tk.Button(
+                root,
+                text="Обновить",
+                image=icon,
+                compound=tk.LEFT,
+                command=on_click,
+                padx=10,
+                pady=5
+            )
+        else:
+            btn = tk.Button(
+                root,
+                text="Обновить",
+                command=on_click,
+                padx=10,
+                pady=5
+            )
         btn.pack(pady=20)
 
         root.mainloop()
