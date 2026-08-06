@@ -9,6 +9,8 @@ from tkinter import PhotoImage
 from tkinter import messagebox
 from datetime import datetime
 import sys
+import os
+
 
 # краткое описание программы для отображения в UI
 DESCRIPTION = (
@@ -18,6 +20,10 @@ DESCRIPTION = (
 )
 # название файла с иконкой приложения и для кнопки
 ICON_FILE = 'cript_coin.gif'
+# названия файла для логов, используется если только существует
+LOG_FILE = 'cript_coin.log'
+# названия файла для хранения архива, используется если только существует
+DAT_FILE = 'cript_coin.txt'
 
 # Пять наиболее популярных криптовалют
 CRYPTO = {
@@ -48,9 +54,15 @@ WARNING_MSGS = {
 
 
 def show_warning(err_code: str, msg='', logging=True) -> None:
-    """  отобразить модальный предупреждающий диалог и/или лог """
+    """  отобразить модальный предупреждающий диалог и/или лог в файл """
+    now = datetime.now()
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(
+                f"{now.strftime("%Y-%m-%d %H:%M:%S")}"
+                f"[{WARNING_MSGS.get(err_code)}] {msg}"
+            )
     if logging:
-        now = datetime.now()
         print(
             f"{now.strftime("%Y-%m-%d %H:%M:%S")}"
             f"[{WARNING_MSGS.get(err_code)}] {msg}")
