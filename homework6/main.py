@@ -6,6 +6,8 @@
 import requests
 import tkinter as tk
 from tkinter import PhotoImage
+from tkinter import messagebox
+from datetime import datetime
 import sys
 
 # краткое описание программы для отображения в UI
@@ -28,7 +30,29 @@ CRYPTO = {
 PARAM = ','.join(CRYPTO.keys())
 URL = (f'https://api.coingecko.com/api/v3/simple/price?ids'
        f'={PARAM}&vs_currencies=usd')
+# сообщения для вывода в msgbox или в log
+WARNING_MSGS = {
+    'api429': (
+        'Предел запросов к API превышен, повторите '
+        'запрос через некоторое время ~20..30 секунд.'
+    ),
+    'netExcept': (
+        'Ошибка сети, проверьти что сайт '
+        'https://coingecko.com/ доступен'
+    ),
+    'apiErr': 'Ошибка API: ',
+    'iconLoadFailed': ''
+}
 
+def show_warning(err_code: str, msg = '', logging = True) -> None:
+    """  отобразить модальный предупреждающий диалог и/или лог """
+    if logging:
+        now = datetime.now()
+        print(f"{now.strftime("%Y-%m-%d %H:%M:%S")} [{WARNING_MSGS.get(err_code)}] {msg}")
+    messagebox.showwarning(
+        'Внимание',
+        WARNING_MSGS.get(err_code)
+    )
 
 def parse_data_from_api(data_: dict | None) -> list | None:
     """ парсит полученный json от api в словать для отображения """
@@ -36,24 +60,22 @@ def parse_data_from_api(data_: dict | None) -> list | None:
     if data_ is not None:
         for coin_id, display_name in CRYPTO.items():
             if coin_id in data_:
-                price_usd = data_[coin_id].get('usd', 0)
-                formatted_price = f'{price_usd:,.2f}'
+                price_usd = data_[coin_id].get("usd", 0)
+                formatted_price = f"{price_usd:,.2f}"
                 result.append({
-                    'coin_id': coin_id,
-                    'display_name': display_name,
-                    'price_usd': formatted_price,
-                    'status': 'ok'
+                    "coin_id": coin_id,
+                    "display_name": display_name,
+                    "price_usd": formatted_price,
+                    "status": "ok"
                 })
             else:
                 result.append({
-                    'coin_id': coin_id,
-                    'display_name': display_name,
-                    'price_usd': None,
-                    'status': 'missing'
+                    "coin_id": coin_id,
+                    "display_name": display_name,
+                    "price_usd": None,
+                    "status": "missing"
                 })
-        return result
-    else:
-        return None
+    return result
 
 
 def get_data_by_api(url_: str) -> dict | None:
@@ -62,11 +84,14 @@ def get_data_by_api(url_: str) -> dict | None:
         response = requests.get(url_, timeout=5)
         if response.status_code == 200:
             return response.json()
+        elif response.status_code == 429:
+            show_warning('api429')
+            return None
         else:
-            print(f'ОШИБКА API: код {response.status_code}')
+            show_warning('apiErr', f'{response.status_code}')
             return None
     except requests.exceptions.RequestException as e:
-        print(f'ОШИБКА сети: {str(e)}')
+        show_warning('netExcept', f'{str(e)}')
         return None
 
 
@@ -107,71 +132,83 @@ def create_tk_interface():
             label.destroy()
         price_labels.clear()
 
-        # краткое описание программы
-        label = tk.Label(
-            window,
-            text=DESCRIPTION,
-            wraplength=350,
-            justify='left',
-            font=('Arial', 10),
-            fg='#333333'  # тёмно‑серый цвет текста
-        )
-        label.pack(pady=10)
-        price_labels.append(label)
-
-        for coin in result_:
+        for i, coin in enumerate(result_):
             label = tk.Label(
                 window,
                 text=coin_info_for_lable(coin),
-                wraplength=350,
-                justify='left',
-                font=('Arial', 14)
+                wraplength=380,
+                justify=tk.LEFT,
+                font=("Arial", 14)
             )
-            label.pack(pady=10)
+            # Без sticky — виджет центрируется в ячейке
+            label.grid(row=1 + i, column=1, pady=5)
             price_labels.append(label)
 
-    def refresh():
+    def fn_refresh():
         """ Обновление по нажатию на кнопку Обновить """
         data = get_data_by_api(URL)
         prices = parse_data_from_api(data)
-        show_coin_prices(prices)
+        if len(prices) != 0:
+            show_coin_prices(prices)
 
     def show_refresh_button(
             window_,
             fn_refresh_,
             icon_=PhotoImage | None) -> tk.Button:
         """ отображает refresh кнопку для запроса новых данных """
-        if icon_ is not None:
-            btn = tk.Button(  # иконка загрузилась
+        if icon_ is not None: ## иконка загрузилась
+            btn = tk.Button(
                 window_,
-                text='Обновить',
+                text="Обновить",
                 image=icon_,
                 compound=tk.LEFT,
-                command=fn_refresh_,
+                command=fn_refresh,
                 padx=10,
                 pady=5
             )
             btn.image = icon_
         else:
-            btn = tk.Button(  # без иконки
+            btn = tk.Button(
                 window_,
-                text='Обновить',
-                command=fn_refresh_,
+                text="Обновить",
+                command=fn_refresh,
                 padx=10,
                 pady=5
             )
-        btn.pack(pady=20)
+        # Кнопка тоже в центральном столбце (column=1)
+        btn.grid(row=6, column=1, pady=20)
         return btn
 
     # главное окно
-    window = tk.Tk()  # объект Tk
-    window.title('курсы популярных криптовалют')
-    window.geometry('400x400')
-    window.resizable(width=False, height=False)  # зафискировать размер
+    window = tk.Tk()
+    window.title("Курсы популярных криптовалют")
+    window.geometry("500x550")
+    window.resizable(width=False, height=False)
+
+    # Ключевой момент: растягиваем центральный столбец
+    window.grid_columnconfigure(1, weight=1)
+    # Опционально: можно растянуть и по вертикали, если нужно
+    window.grid_rowconfigure(0, weight=1)
+    window.grid_rowconfigure(6, weight=1)
 
     # загружаем иконку для отображения в окне и на кнопке
     icon = load_icon(ICON_FILE)
     show_window_icon(window, icon)
+
+    # Описание — в центральном столбце
+    desc_label = tk.Label(
+        window,
+        text=(
+            "Запрос к API CoinGecko для отображения информации о "
+            "стоимости пяти наиболее популярных криптовалют "
+            "к доллару США"
+        ),
+        wraplength=380,
+        justify=tk.LEFT,
+        font=("Arial", 10),
+        fg="#333333"
+    )
+    desc_label.grid(row=0, column=1, sticky="n", pady=(30, 10))
 
     # загружаем данные
     initial_data = get_data_by_api(URL)
@@ -181,7 +218,7 @@ def create_tk_interface():
     show_coin_prices(initial_prices)
 
     # добавляем кнопку для обновления данных
-    show_refresh_button(window, refresh, icon)
+    show_refresh_button(window, fn_refresh, icon)
 
     window.mainloop()
 
