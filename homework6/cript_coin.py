@@ -75,7 +75,19 @@ def show_warning(err_code: str, msg='', logging=True) -> None:
 def parse_data_from_api(data_: dict | None) -> list | None:
     """ парсит полученный json от api в словать для отображения """
     result = []  # локальный список
+
+    def write_data_to_archive(data_: dict | None) -> None:
+        """ если файл для записи результутов запросов есть, добавить """
+        now = datetime.now()
+        if os.path.exists(DAT_FILE):
+            with open(DAT_FILE, "a", encoding="utf-8") as f:
+                f.write(
+                    f"{now.strftime("%Y-%m-%d %H:%M:%S")}\t"
+                    f"{data_}"
+                )
+
     if data_ is not None:
+        write_data_to_archive(data_)
         for coin_id, display_name in CRYPTO.items():
             if coin_id in data_:
                 price_usd = data_[coin_id].get("usd", 0)
