@@ -11,7 +11,6 @@ from datetime import datetime
 import sys
 import os
 
-
 # краткое описание программы для отображения в UI
 DESCRIPTION = (
     'Запрос к API CoinGecko для отображения информации о '
@@ -36,11 +35,14 @@ CRYPTO = {
 # url строка для get запроса
 PARAM = ','.join(CRYPTO.keys())
 
+
 def set_api_point(
-    url_coingecko_api_point = 'https://api.coingecko.com/api/v3/simple/price'
-    ) -> str:
+        url_coingecko_api_point='https://api.coingecko.com/api/v3/simple/price'
+) -> str:
     return (f'{url_coingecko_api_point}?ids'
             f'={PARAM}&vs_currencies=usd')
+
+
 URL = set_api_point()
 
 # сообщения для вывода в msgbox или в log
@@ -84,13 +86,14 @@ def parse_data_from_api(data_: dict | None) -> list | None:
 
     def write_data_to_archive(data_: dict | None) -> None:
         """ если файл для записи результутов запросов есть, добавить """
-        def create_valid_json_str(json_str: str | None) -> str:
+
+        def create_valid_json_str(data_ : dict) -> str:
             now = datetime.now()
             ret = ('{'
-                    f'"datetime": "{now.strftime('%Y-%m-%d %H:%M:%S')}",'
-                    f'"data": {str(data_).replace("'", '"')}'
-                    '}\n'
-            )
+                   f'"datetime": "{now.strftime('%Y-%m-%d %H:%M:%S')}",'
+                   f'"data": {str(data_).replace("'", '"')}'
+                   '}\n'
+                   )
             return ret
 
         if os.path.exists(DAT_FILE):
