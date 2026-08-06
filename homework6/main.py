@@ -18,6 +18,7 @@ DESCRIPTION = (
 )
 # название файла с иконкой приложения и для кнопки
 ICON_FILE = 'cript_coin.gif'
+
 # Пять наиболее популярных криптовалют
 CRYPTO = {
     'bitcoin': 'Bitcoin (BTC)',
@@ -30,6 +31,7 @@ CRYPTO = {
 PARAM = ','.join(CRYPTO.keys())
 URL = (f'https://api.coingecko.com/api/v3/simple/price?ids'
        f'={PARAM}&vs_currencies=usd')
+
 # сообщения для вывода в msgbox или в log
 WARNING_MSGS = {
     'api429': (
@@ -44,15 +46,19 @@ WARNING_MSGS = {
     'iconLoadFailed': ''
 }
 
-def show_warning(err_code: str, msg = '', logging = True) -> None:
+
+def show_warning(err_code: str, msg='', logging=True) -> None:
     """  отобразить модальный предупреждающий диалог и/или лог """
     if logging:
         now = datetime.now()
-        print(f"{now.strftime("%Y-%m-%d %H:%M:%S")} [{WARNING_MSGS.get(err_code)}] {msg}")
+        print(
+            f"{now.strftime("%Y-%m-%d %H:%M:%S")}"
+            f"[{WARNING_MSGS.get(err_code)}] {msg}")
     messagebox.showwarning(
         'Внимание',
         WARNING_MSGS.get(err_code)
     )
+
 
 def parse_data_from_api(data_: dict | None) -> list | None:
     """ парсит полученный json от api в словать для отображения """
@@ -156,7 +162,7 @@ def create_tk_interface():
             fn_refresh_,
             icon_=PhotoImage | None) -> tk.Button:
         """ отображает refresh кнопку для запроса новых данных """
-        if icon_ is not None: ## иконка загрузилась
+        if icon_ is not None:  ## иконка загрузилась
             btn = tk.Button(
                 window_,
                 text="Обновить",
