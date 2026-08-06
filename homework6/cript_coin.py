@@ -57,15 +57,16 @@ def show_warning(err_code: str, msg='', logging=True) -> None:
     """  отобразить модальный предупреждающий диалог и/или лог в файл """
     now = datetime.now()
     if os.path.exists(LOG_FILE):
-        with open(LOG_FILE, "a", encoding="utf-8") as f:
+        with open(LOG_FILE, 'a', encoding='utf-8') as f:
             f.write(
-                f"{now.strftime("%Y-%m-%d %H:%M:%S")}"
-                f"[{WARNING_MSGS.get(err_code)}] {msg}"
+                f'{now.strftime('%Y-%m-%d %H:%M:%S')}'
+                f'[{WARNING_MSGS.get(err_code)}] {msg}'
+                f'\n'
             )
     if logging:
         print(
-            f"{now.strftime("%Y-%m-%d %H:%M:%S")}"
-            f"[{WARNING_MSGS.get(err_code)}] {msg}")
+            f'{now.strftime('%Y-%m-%d %H:%M:%S')}'
+            f'[{WARNING_MSGS.get(err_code)}] {msg}')
     messagebox.showwarning(
         'Внимание',
         WARNING_MSGS.get(err_code)
@@ -78,32 +79,39 @@ def parse_data_from_api(data_: dict | None) -> list | None:
 
     def write_data_to_archive(data_: dict | None) -> None:
         """ если файл для записи результутов запросов есть, добавить """
-        now = datetime.now()
+        def create_valid_json_str(json_str: str | None) -> str:
+            now = datetime.now()
+            ret = ('{'
+                    f'"datetime": "{now.strftime('%Y-%m-%d %H:%M:%S')}",'
+                    f'"data": {str(data_).replace("'", '"')}'
+                    '}\n'
+            )
+            return ret
+
         if os.path.exists(DAT_FILE):
-            with open(DAT_FILE, "a", encoding="utf-8") as f:
+            with open(DAT_FILE, 'a', encoding='utf-8') as f:
                 f.write(
-                    f"{now.strftime("%Y-%m-%d %H:%M:%S")}\t"
-                    f"{data_}"
+                    create_valid_json_str(data_)
                 )
 
     if data_ is not None:
         write_data_to_archive(data_)
         for coin_id, display_name in CRYPTO.items():
             if coin_id in data_:
-                price_usd = data_[coin_id].get("usd", 0)
-                formatted_price = f"{price_usd:,.2f}"
+                price_usd = data_[coin_id].get('usd', 0)
+                formatted_price = f'{price_usd:,.2f}'
                 result.append({
-                    "coin_id": coin_id,
-                    "display_name": display_name,
-                    "price_usd": formatted_price,
-                    "status": "ok"
+                    'coin_id': coin_id,
+                    'display_name': display_name,
+                    'price_usd': formatted_price,
+                    'status': 'ok'
                 })
             else:
                 result.append({
-                    "coin_id": coin_id,
-                    "display_name": display_name,
-                    "price_usd": None,
-                    "status": "missing"
+                    'coin_id': coin_id,
+                    'display_name': display_name,
+                    'price_usd': None,
+                    'status': 'missing'
                 })
     return result
 
@@ -168,7 +176,7 @@ def create_tk_interface():
                 text=coin_info_for_lable(coin),
                 wraplength=380,
                 justify=tk.LEFT,
-                font=("Arial", 14)
+                font=('Arial', 14)
             )
             # Без sticky — виджет центрируется в ячейке
             label.grid(row=1 + i, column=1, pady=5)
@@ -189,7 +197,7 @@ def create_tk_interface():
         if icon_ is not None:  ## иконка загрузилась
             btn = tk.Button(
                 window_,
-                text="Обновить",
+                text='Обновить',
                 image=icon_,
                 compound=tk.LEFT,
                 command=fn_refresh,
@@ -200,7 +208,7 @@ def create_tk_interface():
         else:
             btn = tk.Button(
                 window_,
-                text="Обновить",
+                text='Обновить',
                 command=fn_refresh,
                 padx=10,
                 pady=5
@@ -211,8 +219,8 @@ def create_tk_interface():
 
     # главное окно
     window = tk.Tk()
-    window.title("Курсы популярных криптовалют")
-    window.geometry("500x550")
+    window.title('Курсы популярных криптовалют')
+    window.geometry('500x550')
     window.resizable(width=False, height=False)
 
     # Ключевой момент: растягиваем центральный столбец
@@ -229,16 +237,16 @@ def create_tk_interface():
     desc_label = tk.Label(
         window,
         text=(
-            "Запрос к API CoinGecko для отображения информации о "
-            "стоимости пяти наиболее популярных криптовалют "
-            "к доллару США"
+            'Запрос к API CoinGecko для отображения информации о '
+            'стоимости пяти наиболее популярных криптовалют '
+            'к доллару США'
         ),
         wraplength=380,
         justify=tk.LEFT,
-        font=("Arial", 10),
-        fg="#333333"
+        font=('Arial', 10),
+        fg='#333333'
     )
-    desc_label.grid(row=0, column=1, sticky="n", pady=(30, 10))
+    desc_label.grid(row=0, column=1, sticky='n', pady=(30, 10))
 
     # загружаем данные
     initial_data = get_data_by_api(URL)
