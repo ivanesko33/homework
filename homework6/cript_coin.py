@@ -35,8 +35,13 @@ CRYPTO = {
 }
 # url строка для get запроса
 PARAM = ','.join(CRYPTO.keys())
-URL = (f'https://api.coingecko.com/api/v3/simple/price?ids'
-       f'={PARAM}&vs_currencies=usd')
+
+def set_api_point(
+    url_coingecko_api_point = 'https://api.coingecko.com/api/v3/simple/price'
+    ) -> str:
+    return (f'{url_coingecko_api_point}?ids'
+            f'={PARAM}&vs_currencies=usd')
+URL = set_api_point()
 
 # сообщения для вывода в msgbox или в log
 WARNING_MSGS = {
@@ -264,6 +269,10 @@ def create_tk_interface():
 # main
 if __name__ == '__main__':
     if sys.version_info >= (3, 11):  # для версии 3.11 или выше
+        # можно заменить Coingecko api фронт поинт передав новый папаметром
+        # python cript_coin.py https://api.coingecko.com/api/v3/simple/price
+        if len(sys.argv) < 1:
+            URL = set_api_point(sys.argv[1])
         create_tk_interface()
     else:
         print('Программа разработана для версия Python 3.11 или выше')
